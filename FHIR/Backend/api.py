@@ -9,10 +9,10 @@ app = FastAPI(
     version="1.0.0"
 )
 
-# CORS setup (for frontend access)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Update for production
+    allow_origins=["*"],  
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

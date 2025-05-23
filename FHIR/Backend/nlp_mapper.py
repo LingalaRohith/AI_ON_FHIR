@@ -3,7 +3,7 @@ import re
 
 nlp = spacy.load("en_core_web_sm")
 
-# Fake dataset
+
 patients_db = [
     {"id": "1", "name": "Alice Johnson", "age": 55, "conditions": ["diabetes"]},
     {"id": "2", "name": "Bob Smith", "age": 45, "conditions": ["covid"]},
@@ -14,25 +14,22 @@ patients_db = [
     {"id": "7", "name": "Grace Kim", "age": 50, "conditions": ["covid", "diabetes"]}
 ]
 
-# Normalize synonyms/adjectives to match dataset terms
+
 condition_map = {
     "diabetic": "diabetes",
     "asthmatic": "asthma",
     "hypertensive": "hypertension"
 }
 
-# All known conditions from dataset
 KNOWN_CONDITIONS = set(c for p in patients_db for c in p["conditions"])
 
-# Words to ignore as candidate conditions
+
 IGNORE_WORDS = {"show", "list", "find", "give", "get", "all", "patients", "patient", "with", "me"}
 
 def parse_query(query):
     doc = nlp(query.lower())
     age_filter = {}
     conditions = []
-
-    # Extract from noun chunks first
     for chunk in doc.noun_chunks:
         for word in chunk:
             if word.text in IGNORE_WORDS:
@@ -41,7 +38,6 @@ def parse_query(query):
             if normalized in KNOWN_CONDITIONS and normalized not in conditions:
                 conditions.append(normalized)
 
-    # Fallback to token loop
     if not conditions:
         for token in doc:
             if token.text not in IGNORE_WORDS and token.pos_ in {"NOUN", "ADJ"}:
@@ -49,7 +45,6 @@ def parse_query(query):
                 if normalized in KNOWN_CONDITIONS and normalized not in conditions:
                     conditions.append(normalized)
 
-    # Age filter logic
     age_match = re.search(r'\d+', query)
     if age_match:
         age_val = int(age_match.group())
@@ -104,7 +99,6 @@ def simulate_fhir_response(parsed_query):
         "entry": results
     }
 
-# Example queries
 if __name__ == "__main__":
     queries = [
         "Show me all diabetic patients over 50",
